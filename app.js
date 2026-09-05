@@ -1,6 +1,7 @@
-// 福井しりとりスクリーンセーバー
-// 「福井」から開始し、全国名字ランキング1000位以内の名字だけでしりとりする。
-// 2秒ごとに表示、次がなければ「ここでおわり」を出して5秒後に再開。一度使った名字は再利用しない。
+// 福井しりとりスクリーンセーバー（漢字しりとり版）
+// 「福井」から開始し、全国名字ランキング1000位以内の名字だけでつなげる。
+// つながりは漢字で判定：前の名字の最後の一文字 → 次の名字の最初の一文字（例：池田→田中→中川）。
+// 読み・順位・人数もあわせて表示。2秒ごとに表示、次がなければ「ここでおわり」を出して5秒後に再開。一度使った名字は再利用しない。
 
 (function () {
   "use strict";
@@ -9,36 +10,12 @@
   var END_MS = 5000;
   var START_KANJI = "福井";
 
-  var SMALL = {
-    "ぁ": "あ", "ぃ": "い", "ぅ": "う", "ぇ": "え", "ぉ": "お",
-    "ゃ": "や", "ゅ": "ゆ", "ょ": "よ", "っ": "つ", "ゎ": "わ", "ゔ": "う"
-  };
-  var VOICED = {
-    "が": "か", "ぎ": "き", "ぐ": "く", "げ": "け", "ご": "こ",
-    "ざ": "さ", "じ": "し", "ず": "す", "ぜ": "せ", "ぞ": "そ",
-    "だ": "た", "ぢ": "ち", "づ": "つ", "で": "て", "ど": "と",
-    "ば": "は", "び": "ひ", "ぶ": "ふ", "べ": "へ", "ぼ": "ほ",
-    "ぱ": "は", "ぴ": "ひ", "ぷ": "ふ", "ぺ": "へ", "ぽ": "ほ", "ゔ": "う"
-  };
-
-  function normChar(ch) {
-    if (SMALL[ch]) ch = SMALL[ch];
-    if (VOICED[ch]) ch = VOICED[ch];
-    return ch;
+  // 漢字しりとりの判定：最初の一文字・最後の一文字（1文字の名字はその1文字が両方になる）
+  function firstKanji(entry) {
+    return entry.kanji.charAt(0);
   }
-  function firstKana(yomi) {
-    return normChar(yomi.charAt(0));
-  }
-  function lastKana(yomi) {
-    var s = yomi.replace(/ー+$/, "");
-    if (!s) return "ん";
-    var ch = s.charAt(s.length - 1);
-    if (ch === "ー" && s.length >= 2) ch = s.charAt(s.length - 2);
-    return normChar(ch);
-  }
-  function rawLast(yomi) {
-    var s = yomi.replace(/ー+$/, "");
-    return s.charAt(s.length - 1);
+  function lastKanji(entry) {
+    return entry.kanji.charAt(entry.kanji.length - 1);
   }
 
   var byKanji = {};
@@ -67,31 +44,32 @@
   var elCountNum = document.getElementById("countNum");
   var elCountBar = document.getElementById("countBar");
 
-  function candidatesFor(kana) {
+  function candidatesFor(ch) {
     return MYOJI_DATA.filter(function (d) {
-      return !used.has(d.kanji) && firstKana(d.yomi) === kana;
+      return !used.has(d.kanji) && firstKanji(d) === ch;
     });
   }
 
+  function onwardCount(d) {
+    var lk = lastKanji(d);
+    var n = 0;
+    for (var i = 0; i < MYOJI_DATA.length; i++) {
+      var x = MYOJI_DATA[i];
+      if (x.kanji === d.kanji || used.has(x.kanji)) continue;
+      if (firstKanji(x) === lk) n++;
+    }
+    return n;
+  }
+
   function chooseNext(current) {
-    var need = lastKana(current.yomi);
+    var need = lastKanji(current);
     var cand = candidatesFor(need);
     if (cand.length === 0) return null;
-    // 「ん」で終わる名字を選ぶと直後に詰むので強く避ける。
-    // 1手先の候補数を数えて、行き止まりになりにくいものを優先（上位3つからランダム）。
-    function score(d) {
-      if (d.yomi.endsWith("ん")) return -10000;
-      var lk = lastKana(d.yomi);
-      var onward = 0;
-      for (var i = 0; i < MYOJI_DATA.length; i++) {
-        var x = MYOJI_DATA[i];
-        if (x.kanji === d.kanji || used.has(x.kanji)) continue;
-        if (firstKana(x.yomi) === lk) onward++;
-      }
-      if (onward === 0) return -1000;
-      return onward * 10 + Math.random();
-    }
-    var scored = cand.map(function (d) { return { d: d, s: score(d) }; });
+    // 行き止まりの字で終わる名字は避ける（全候補が行き止まりのときだけ許す）。
+    // そのうえで1手先の候補数が多いものを優先し、上位3つからランダムに選ぶ。
+    var alive = cand.filter(function (d) { return onwardCount(d) > 0; });
+    var pool = alive.length > 0 ? alive : cand;
+    var scored = pool.map(function (d) { return { d: d, s: onwardCount(d) * 10 + Math.random() }; });
     scored.sort(function (a, b) { return b.s - a.s; });
     var top = scored.slice(0, Math.min(3, scored.length));
     return top[Math.floor(Math.random() * top.length)].d;
@@ -108,19 +86,19 @@
       elLink.textContent = "「福井」から スタート（全国" + fmt(entry.rank) + "位）";
     } else {
       elLink.textContent =
-        "「" + prev.kanji + "（" + prev.yomi + "）」の おわり「" + rawLast(prev.yomi) + "」 → 「" + entry.kanji + "（" + entry.yomi + "）」";
+        "「" + prev.kanji + "」の おわり「" + lastKanji(prev) + "」 → 「" + entry.kanji + "」のはじまり「" + firstKanji(entry) + "」";
     }
-    var lk = lastKana(entry.yomi);
+    var lk = lastKanji(entry);
     elBridge.innerHTML = "";
     var a = document.createElement("span");
     a.className = "bridge-end";
-    a.textContent = "おわり「" + rawLast(entry.yomi) + "」";
+    a.textContent = "おわり「" + lastKanji(entry) + "」";
     var ar = document.createElement("span");
     ar.className = "bridge-arrow";
     ar.textContent = "→";
     var b = document.createElement("span");
     b.className = "bridge-next";
-    b.textContent = "つぎは「" + lk + "」から";
+    b.textContent = "つぎは「" + lk + "」からはじまる名字";
     elBridge.appendChild(a); elBridge.appendChild(ar); elBridge.appendChild(b);
     elStep.textContent = chain.length + " 手目";
     elCard.classList.remove("swap");
@@ -176,13 +154,8 @@
     phase = "end";
     elCard.classList.add("hidden");
     elEnd.classList.remove("hidden");
-    var lk = lastKana(last.yomi);
-    var reason;
-    if (rawLast(last.yomi) === "ん" || lk === "ん") {
-      reason = "「" + last.kanji + "（" + last.yomi + "）」は「ん」で おわるので、つぎに つなげられません。";
-    } else {
-      reason = "「" + last.kanji + "（" + last.yomi + "）」の おわり「" + rawLast(last.yomi) + "」から はじまる、まだ使っていない名字（1000位以内）が ありません。";
-    }
+    var lk = lastKanji(last);
+    var reason = "「" + last.kanji + "（" + last.yomi + "）」の おわり「" + lk + "」からはじまる、まだ使っていない名字（1000位以内）が ありません。";
     elEndReason.textContent = reason;
     elEndStat.textContent = "今回の しりとり： 全 " + chain.length + " 手（「福井」から「" + last.kanji + "」まで・重複なし）";
     elStep.textContent = "おわり（全" + chain.length + "手）";
