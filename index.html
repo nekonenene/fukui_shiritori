@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>福井しりとりスクリーンセーバー</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><div class="bg-circle c1"></div><div class="bg-circle c2"></div><div class="bg-circle c3"></div></div>
+
+<header class="topbar">
+  <div class="title">福井しりとり <span class="subtitle">スクリーンセーバー</span></div>
+  <div class="top-meta"><span id="stepBadge">1 手目</span><span id="poolBadge">全国ランキング1000位以内を使用</span></div>
+</header>
+
+<main class="stage">
+  <section id="card" class="card" aria-live="polite">
+    <div class="link-line" id="linkLine">「福井」から スタート</div>
+    <div class="yomi" id="yomi">ふくい</div>
+    <div class="kanji" id="kanji">福井</div>
+    <div class="meta">
+      <span class="pill">全国 <b id="rank">196</b> 位</span>
+      <span class="pill">およそ <b id="pop">103,000</b> 人</span>
+    </div>
+    <div class="kana-bridge" id="bridge">
+      <span class="bridge-end">おわり「い」</span>
+      <span class="bridge-arrow">→</span>
+      <span class="bridge-next">つぎは「い」から</span>
+    </div>
+  </section>
+
+  <section id="endCard" class="card end hidden">
+    <div class="end-mark">おわり</div>
+    <h2 class="end-title">ここで おわり です</h2>
+    <p class="end-reason" id="endReason"></p>
+    <p class="end-stat" id="endStat"></p>
+    <div class="countdown-wrap">
+      <div class="countdown-bar"><div id="countBar"></div></div>
+      <div class="countdown-text"><span id="countNum">5</span> 秒後に「福井」から はじめます</div>
+    </div>
+  </section>
+
+  <section class="history-wrap">
+    <div class="history-label">これまでの しりとり</div>
+    <div class="history" id="history"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="source">名字データ出典：<a href="https://myoji-yurai.net/prefectureRanking.htm" target="_blank" rel="noopener">名字由来net 全国名字ランキング</a>（2026年4月時点）／順位・推定人数・代表読みを使用（上位300件＝すべて1000位以内）</div>
+  <div class="controls">
+    <button id="btnPause" title="一時停止 / 再開（Space）">⏸ 一時停止</button>
+    <button id="btnRestart" title="最初から（R）">↺ 最初から</button>
+    <button id="btnFull" title="全画面（F）">⛶ 全画面</button>
+    <button id="btnRule" title="ルール表示">？ ルール</button>
+  </div>
+</footer>
+
+<div id="ruleModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="ルール">
+  <div class="modal-card">
+    <h2>ルール</h2>
+    <ul>
+      <li>「福井（ふくい）」から はじめます。</li>
+      <li>日本の名字ランキング <b>1,000位以内</b> の名字だけで つなげます。</li>
+      <li>2秒ごとに つぎの名字を 表示します。</li>
+      <li>読みの おわり と はじまり で つなげます（一度使った名字は使えません）。</li>
+      <li>濁点・半濁点は清音としてつなげます（例：だ→た、べ→へ、ご→こ）。</li>
+      <li>小さい文字は大きい文字に直します（例：ゃ→や、っ→つ）。「ー」は直前の文字で判定します。</li>
+      <li>「ん」で おわる名字の つぎ はありません。</li>
+      <li>つぎ が ないときは「ここで おわり」を表示し、5秒後に「福井」から やり直します。</li>
+    </ul>
+    <button id="btnCloseRule">とじる</button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
