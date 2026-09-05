@@ -77,6 +77,52 @@
 
   function fmt(n) { return n.toLocaleString("ja-JP"); }
 
+  // ウィンドウの縦・横から「できるだけ大きい」基本サイズを決め、
+  // 横にはみ出す場合だけ自動で縮小する。
+  function fitLine(el, base) {
+    var size = Math.max(12, Math.floor(base));
+    el.style.fontSize = size + "px";
+    var min = Math.max(10, Math.floor(base * 0.3));
+    var guard = 400;
+    while (guard-- > 0 && size > min &&
+           (el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight)) {
+      size -= 2;
+      el.style.fontSize = size + "px";
+    }
+  }
+  function pageOverflows() {
+    return document.body.scrollHeight > window.innerHeight + 1;
+  }
+  function fitMain() {
+    if (elCard.classList.contains("hidden")) return;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var klen = Array.from(elKanji.textContent).length;
+    var kBase = Math.min(
+      vw * (klen <= 2 ? 0.30 : klen === 3 ? 0.20 : 0.15),
+      vh * 0.32
+    );
+    fitLine(elKanji, kBase);
+    fitLine(elYomi, Math.min(vw * 0.055, vh * 0.075));
+    // ページ全体が縦にはみ出す場合は名字をさらに縮小し、スクロールを出さない
+    var size = parseFloat(elKanji.style.fontSize) || kBase;
+    var guard = 200;
+    while (guard-- > 0 && size > 24 && pageOverflows()) {
+      size -= 4;
+      elKanji.style.fontSize = size + "px";
+    }
+  }
+  function fitEnd() {
+    if (elEnd.classList.contains("hidden")) return;
+    var title = elEnd.querySelector(".end-title");
+    var size = Math.min(window.innerWidth * 0.09, window.innerHeight * 0.12);
+    title.style.fontSize = Math.floor(size) + "px";
+    var guard = 200;
+    while (guard-- > 0 && size > 24 && pageOverflows()) {
+      size -= 4;
+      title.style.fontSize = Math.floor(size) + "px";
+    }
+  }
+
   function render(entry, prev) {
     elYomi.textContent = entry.yomi;
     elKanji.textContent = entry.kanji;
@@ -105,11 +151,12 @@
     void elCard.offsetWidth;
     elCard.classList.add("swap");
     renderHistory();
+    fitMain();
   }
 
   function renderHistory() {
     elHistory.innerHTML = "";
-    var tail = chain.slice(-10);
+    var tail = chain.slice(-8);
     tail.forEach(function (d, i) {
       var chip = document.createElement("span");
       chip.className = "chip" + (i === tail.length - 1 ? " current" : "");
@@ -159,6 +206,7 @@
     elEndReason.textContent = reason;
     elEndStat.textContent = "今回の しりとり： 全 " + chain.length + " 手（「福井」から「" + last.kanji + "」まで・重複なし）";
     elStep.textContent = "おわり（全" + chain.length + "手）";
+    fitEnd();
 
     var remain = END_MS / 1000;
     elCountNum.textContent = String(remain);
@@ -222,6 +270,15 @@
     else if (e.key === "r" || e.key === "R") { setPaused(false); restart(); }
     else if (e.key === "f" || e.key === "F") { btnFull.click(); }
     else if (e.key === "Escape") { ruleModal.classList.add("hidden"); }
+  });
+  var resizeTimer = null;
+  window.addEventListener("resize", function () {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      resizeTimer = null;
+      if (phase === "show" && chain.length > 0) fitMain();
+      else if (phase === "end") fitEnd();
+    }, 150);
   });
 
   // ---- start ----

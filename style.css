@@ -14,8 +14,9 @@ body {
   background: radial-gradient(1200px 800px at 20% 10%, #1b2547 0%, var(--bg) 55%) fixed, var(--bg);
   color: var(--ink);
   font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
-  overflow-x: hidden;
-  min-height: 100vh;
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -31,40 +32,45 @@ body {
 
 .topbar {
   z-index: 1;
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 14px 22px;
+  padding: 1.2dvh 1.5vw;
   border-bottom: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(6px);
 }
-.title { font-size: 22px; font-weight: 800; letter-spacing: 0.06em; }
-.subtitle { font-size: 14px; font-weight: 400; color: var(--muted); margin-left: 8px; }
-.top-meta { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.title { font-size: clamp(18px, 3.4vmin, 44px); font-weight: 800; letter-spacing: 0.06em; }
+.subtitle { font-size: 0.62em; font-weight: 400; color: var(--muted); margin-left: 8px; }
+.top-meta { display: flex; gap: 8px; align-items: center; font-size: clamp(11px, 2.1vmin, 22px); color: var(--muted); flex-wrap: wrap; }
 #stepBadge {
   background: var(--accent); color: #221a03; font-weight: 800;
-  padding: 4px 12px; border-radius: 999px;
+  padding: 0.4vmin 1.6vmin; border-radius: 999px;
+  font-size: clamp(12px, 2.4vmin, 26px);
 }
 
 .stage {
   z-index: 1;
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
-  padding: 28px 18px 10px;
+  gap: 1.8dvh;
+  padding: 1dvh 1.5vw;
   text-align: center;
 }
 .card {
-  width: min(760px, 92vw);
+  width: min(97vw, 210dvh);
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 24px;
-  padding: 30px 26px 26px;
+  border-radius: 3vmin;
+  padding: 2.6vmin 2.6vmin 2.2vmin;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(10px);
 }
@@ -73,95 +79,105 @@ body {
   0% { opacity: 0; transform: translateY(14px) scale(0.99); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-.link-line { color: var(--muted); font-size: 15px; min-height: 1.6em; }
-.yomi { font-size: clamp(26px, 5vw, 44px); color: var(--accent2); letter-spacing: 0.25em; margin-top: 6px; }
-.kanji {
-  font-size: clamp(72px, 16vw, 150px);
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: 0.08em;
-  margin: 4px 0 12px;
-  text-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+.link-line { color: var(--muted); font-size: clamp(13px, 2.6vmin, 32px); min-height: 1.6em; }
+.yomi {
+  font-size: 6vmin;
+  color: var(--accent2);
+  letter-spacing: 0.2em;
+  margin-top: 0.5vmin;
+  white-space: nowrap;
+  line-height: 1.3;
 }
-.meta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.kanji {
+  font-size: 22vmin;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  margin: 0.5vmin 0 1.2vmin;
+  text-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+}
+.meta { display: flex; gap: 1.2vmin; justify-content: center; flex-wrap: wrap; }
 .pill {
   border: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.3);
-  padding: 8px 16px;
+  padding: 1vmin 2.6vmin;
   border-radius: 999px;
-  font-size: 17px;
+  font-size: clamp(14px, 3.4vmin, 44px);
 }
-.pill b { font-size: 22px; color: var(--accent); }
+.pill b { font-size: 1.35em; color: var(--accent); }
 .kana-bridge {
-  margin-top: 16px;
+  margin-top: 1.6vmin;
   display: flex;
-  gap: 10px;
+  gap: 1.2vmin;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
+  flex-wrap: wrap;
+  font-size: clamp(12px, 2.8vmin, 34px);
   color: var(--muted);
 }
 .bridge-end, .bridge-next {
   background: rgba(255, 209, 102, 0.12);
   border: 1px dashed rgba(255, 209, 102, 0.5);
-  padding: 6px 12px;
+  padding: 0.6vmin 1.6vmin;
   border-radius: 12px;
   color: var(--ink);
 }
-.bridge-arrow { font-size: 22px; color: var(--accent); }
+.bridge-arrow { font-size: 1.4em; color: var(--accent); }
 
 .hidden { display: none !important; }
 .card.end { border-color: rgba(255, 209, 102, 0.6); }
 .end-mark {
   display: inline-block;
-  font-size: 15px; font-weight: 800; letter-spacing: 0.3em;
+  font-size: clamp(12px, 2.8vmin, 32px); font-weight: 800; letter-spacing: 0.3em;
   background: #ff5d5d; color: #fff;
-  padding: 6px 16px 6px 20px; border-radius: 999px;
+  padding: 0.6vmin 2vmin 0.6vmin 2.6vmin; border-radius: 999px;
   animation: blink 1s steps(2) infinite;
 }
 @keyframes blink { 50% { opacity: 0.55; } }
-.end-title { font-size: clamp(34px, 7vw, 60px); margin: 12px 0 6px; }
-.end-reason { font-size: 18px; color: var(--ink); }
-.end-stat { color: var(--muted); }
-.countdown-wrap { margin-top: 14px; }
-.countdown-bar { height: 10px; background: rgba(255,255,255,0.15); border-radius: 999px; overflow: hidden; }
+.end-title { font-size: clamp(30px, 9vmin, 130px); margin: 1vmin 0 0.5vmin; }
+.end-reason { font-size: clamp(15px, 3.4vmin, 42px); color: var(--ink); }
+.end-stat { color: var(--muted); font-size: clamp(12px, 2.6vmin, 30px); }
+.countdown-wrap { margin-top: 1.4vmin; }
+.countdown-bar { height: 1.2vmin; min-height: 8px; background: rgba(255,255,255,0.15); border-radius: 999px; overflow: hidden; }
 .countdown-bar > div { height: 100%; width: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s linear; }
-.countdown-text { margin-top: 8px; color: var(--muted); }
-#countNum { font-size: 26px; font-weight: 800; color: var(--accent); }
+.countdown-text { margin-top: 1vmin; color: var(--muted); font-size: clamp(12px, 2.6vmin, 30px); }
+#countNum { font-size: 1.6em; font-weight: 800; color: var(--accent); }
 
-.history-wrap { width: min(900px, 94vw); }
-.history-label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
-.history { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.history-wrap { width: min(97vw, 220dvh); flex-shrink: 0; }
+.history-label { color: var(--muted); font-size: clamp(11px, 2.1vmin, 22px); margin-bottom: 0.8vmin; }
+.history { display: flex; gap: 0.8vmin; flex-wrap: wrap; justify-content: center; max-height: 9vmin; overflow: hidden; }
 .chip {
-  font-size: 14px;
+  font-size: clamp(12px, 2.4vmin, 28px);
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.07);
-  padding: 5px 10px;
+  padding: 0.5vmin 1.4vmin;
   border-radius: 999px;
 }
-.chip small { color: var(--muted); margin-left: 6px; }
+.chip small { color: var(--muted); margin-left: 0.6vmin; }
 .chip.current { border-color: var(--accent); background: rgba(255, 209, 102, 0.15); }
 
 .foot {
   z-index: 1;
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 1vmin;
   flex-wrap: wrap;
-  padding: 12px 22px 18px;
+  padding: 0.8dvh 1.5vw 1dvh;
   color: var(--muted);
-  font-size: 12px;
+  font-size: clamp(10px, 1.8vmin, 17px);
 }
 .foot a { color: var(--accent2); }
-.controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.controls { display: flex; gap: 0.8vmin; flex-wrap: wrap; }
 .controls button, .modal-card button {
   background: rgba(255, 255, 255, 0.1);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 0.8vmin 1.6vmin;
+  font-size: clamp(12px, 2.2vmin, 22px);
   cursor: pointer;
 }
 .controls button:hover, .modal-card button:hover { background: rgba(255, 255, 255, 0.2); }
@@ -177,7 +193,10 @@ body {
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 22px;
-  max-width: 560px;
+  max-width: min(640px, 94vw);
+  max-height: 90dvh;
+  overflow-y: auto;
   text-align: left;
   line-height: 1.9;
+  font-size: clamp(14px, 2.6vmin, 24px);
 }
