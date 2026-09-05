@@ -66,13 +66,10 @@
     var cand = candidatesFor(need);
     if (cand.length === 0) return null;
     // 行き止まりの字で終わる名字は避ける（全候補が行き止まりのときだけ許す）。
-    // そのうえで1手先の候補数が多いものを優先し、上位3つからランダムに選ぶ。
+    // あとは純粋ランダムで毎回違う展開にする。
     var alive = cand.filter(function (d) { return onwardCount(d) > 0; });
     var pool = alive.length > 0 ? alive : cand;
-    var scored = pool.map(function (d) { return { d: d, s: onwardCount(d) * 10 + Math.random() }; });
-    scored.sort(function (a, b) { return b.s - a.s; });
-    var top = scored.slice(0, Math.min(3, scored.length));
-    return top[Math.floor(Math.random() * top.length)].d;
+    return pool[Math.floor(Math.random() * pool.length)];
   }
 
   function fmt(n) { return n.toLocaleString("ja-JP"); }
