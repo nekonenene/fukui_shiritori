@@ -1,5 +1,5 @@
 // 福井しりとりスクリーンセーバー（漢字しりとり版）
-// 「福井」から開始し、全国名字ランキング1000位以内の名字だけでつなげる。
+// 「福井」から開始し、全国名字ランキング2000位以内の名字だけでつなげる。
 // つながりは漢字で判定：前の名字の最後の一文字 → 次の名字の最初の一文字（例：池田→田中→中川）。
 // 読み・順位・人数もあわせて表示。2秒ごとに表示、次がなければ「ここでおわり」を出して5秒後に再開。一度使った名字は再利用しない。
 
@@ -199,7 +199,7 @@
     elCard.classList.add("hidden");
     elEnd.classList.remove("hidden");
     var lk = lastKanji(last);
-    var reason = "「" + last.kanji + "（" + last.yomi + "）」の おわり「" + lk + "」からはじまる、まだ使っていない名字（1000位以内）が ありません。";
+    var reason = "「" + last.kanji + "（" + last.yomi + "）」の おわり「" + lk + "」からはじまる、まだ使っていない名字（2000位以内）が ありません。";
     elEndReason.textContent = reason;
     elEndStat.textContent = "今回の しりとり： 全 " + chain.length + " 手（「福井」から「" + last.kanji + "」まで・重複なし）";
     elStep.textContent = "おわり（全" + chain.length + "手）";
